@@ -1,0 +1,4 @@
+#Sat Jul 17 15:57:06 ICT 2021
+base.0=D\:\\Project for Github\\Project-E-Shopping\\sourcecode\\build\\app\\intermediates\\dex\\debug\\mergeDexDebug\\classes.dex
+renamed.0=classes.dex
+path.0=classes.dex
