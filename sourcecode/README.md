@@ -1,6 +1,6 @@
 # sourcecode
 
-A new Flutter project.
+A Flutter project about Shopping like Shoppee, Tiki.
 
 ## Getting Started
 
