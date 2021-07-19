@@ -1,7 +1,21 @@
+import 'package:e_shopping_application/AllScreens/registerScreen.dart';
+import 'package:e_shopping_application/AllWidget/progressDialog.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+
+import '../main.dart';
+import 'mainScreen.dart';
 
 class LoginScreen extends StatelessWidget {
   @override
+
+  static const String idScreen  = "login";
+  TextEditingController emailTextEditingController = TextEditingController();
+  TextEditingController passwordTextEditingController = TextEditingController();
+
+
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
@@ -40,6 +54,7 @@ class LoginScreen extends StatelessWidget {
 
                   SizedBox(height: 1.0,),
                   TextField(
+                    controller: emailTextEditingController,
                     keyboardType: TextInputType.emailAddress,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(),
@@ -57,6 +72,7 @@ class LoginScreen extends StatelessWidget {
 
                   SizedBox(height: 12.0,),
                   TextField(
+                    controller: passwordTextEditingController,
                     obscureText: true,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(),
@@ -91,13 +107,23 @@ class LoginScreen extends StatelessWidget {
                     ),
                     onPressed: ()
                     {
-
+                      if(!emailTextEditingController.text.contains("@"))
+                      {
+                        displayToastMessage("Email  address is not Valid.", context);
+                      }
+                      else if(passwordTextEditingController.text.length <6)
+                      {
+                        displayToastMessage("Password is madatory.", context);
+                      }
+                      else{
+                        loginAndAutheticateUser(context);
+                      }
                     },
                   ),
                   FlatButton(
                     onPressed: ()
                     {
-
+                      Navigator.pushNamedAndRemoveUntil(context, RegisterScreen.idScreen, (route) => false);
                     },
                     child: Text(
                         "Do not have an Account? Register Here."
@@ -111,5 +137,52 @@ class LoginScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+
+  void loginAndAutheticateUser(BuildContext context) async
+  {
+    showDialog(
+        context: context, barrierDismissible: false,
+        builder: (BuildContext context)
+        {
+          return ProgressDialog(message: "Authenticating, Please wait...",);
+        }
+    );
+    final User? firebaseUser  = (await _firebaseAuth
+        .signInWithEmailAndPassword(
+        email: emailTextEditingController.text,
+        password: passwordTextEditingController.text
+    ).catchError((errMsg){
+      Navigator.pop(context);
+      displayToastMessage("Error: "+ errMsg.toString(), context);
+    })).user;
+    if(firebaseUser != null)//user create
+        {
+      usersRef.child(firebaseUser.uid).once().then((DataSnapshot snap){
+        if(snap.value != null)
+        {
+          Navigator.pushNamedAndRemoveUntil(context, MainScreen.idScreen, (route) => false);
+          displayToastMessage("You are logged-in now.", context);
+        }
+        else
+        {
+          Navigator.pop(context);
+          _firebaseAuth.signOut();
+          displayToastMessage("Error Ocured.", context);
+        }
+      });
+
+    }
+    else
+    {
+      Navigator.pop(context);
+      displayToastMessage("New user account hasnot been Create", context);
+    }
+  }
+
+  displayToastMessage(String message, BuildContext context)
+  {
+    Fluttertoast.showToast(msg: message);
   }
 }
