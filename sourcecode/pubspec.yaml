@@ -51,16 +51,6 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - images/logoes.png
-    #- images/car_android.png
-    #- images/car_ios.png
-    #- images/desticon.png
-    #- images/desticon1.png
-    #- images/logo1.png
-    #- images/logo.png
-    #- images/pickicon.png
-    #- images/posimarker.png
-    #- images/redmarker.png
-    #- images/taxi.png
     #- images/user_icon.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
